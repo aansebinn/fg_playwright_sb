@@ -23,6 +23,11 @@ jobs:
           "${{ env.PYTHON_PATH }}\python.exe" -m pip install --user -r requirements.txt
           "${{ env.PYTHON_PATH }}\python.exe" -m pip install --user pytest-html
           "${{ env.PYTHON_PATH }}\python.exe" -m playwright install
+
+      - name: Create output directory
+        shell: cmd
+        run: |
+          if not exist output mkdir output
       
       - name: Create .env file
         shell: cmd
@@ -59,9 +64,9 @@ jobs:
       - name: Generate test summary
         if: always()
         id: summary  # body {{ steps.summary.outputs.summary }}에 사용
-        shell: pwsh
+        shell: powershell
         run: |
-          & ./scripts/generate-test-summary.ps1 -OutputPath "output"
+           .\scripts\generate-test-summary.ps1 -OutputPath "output"
       
       - name: Upload test results
         if: always()
