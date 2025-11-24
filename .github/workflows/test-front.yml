@@ -108,6 +108,7 @@ jobs:
           subject: FG Automation Front Test Results
           to: taehyung-moon@nhnservice.com, seungbin.an@nhnservice.com
           from: ${{ secrets.MAIL_USER }}
+          content_type: text/plain; charset="UTF-8"
           body: |
             FG Automation Playwright Front 테스트가 완료되었습니다.
 
