@@ -9,26 +9,33 @@ jobs:
   test:
     runs-on: [self-hosted]
     env:
-      PYTHON_PATH: C:\Users\NHN\AppData\Local\Programs\Python\Python311
       PYTHONIOENCODING: utf-8
       HEADLESS: "True"   # Headless 모드 True로 설정
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
+      # ✅ GitHub Actions가 알아서 Python 3.11 설치 & PATH 설정
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Install dependencies
         shell: cmd
         run: |
-          "${{ env.PYTHON_PATH }}\python.exe" -m pip install --user -r requirements.txt
-          "${{ env.PYTHON_PATH }}\python.exe" -m pip install --user pytest-html
-          "${{ env.PYTHON_PATH }}\python.exe" -m playwright install
+          python --version
+          python -m pip install -r requirements.txt
+          python -m pip install pytest-html
+          python -m playwright install
 
+      # ✅ output 폴더 없을 때 대비해서 미리 생성
       - name: Create output directory
         shell: cmd
         run: |
           if not exist output mkdir output
-      
+
       - name: Create .env file
         shell: cmd
         run: |
@@ -46,28 +53,33 @@ jobs:
             echo fr_user_id=${{ secrets.FR_USER_ID }}
             echo fr_user_mobile_id=${{ secrets.FR_USER_MOBILE_ID }}
           ) > .env
-      
+
       - name: Run Precondition tests
         shell: cmd
         run: |
           chcp 65001
-          "${{ env.PYTHON_PATH }}\python.exe" -m pytest tests/precondition -v -s --tb=short --junitxml=output/precondition-results.xml --html=output/precondition-report.html --self-contained-html
+          python -m pytest tests/precondition -v -s --tb=short ^
+            --junitxml=output/precondition-results.xml ^
+            --html=output/precondition-report.html --self-contained-html
         continue-on-error: true
 
       - name: Run Front tests
         shell: cmd
         run: |
           chcp 65001
-          "${{ env.PYTHON_PATH }}\python.exe" -m pytest tests/front -v -s --tb=short --junitxml=output/front-results.xml --html=output/front-report.html --self-contained-html
+          python -m pytest tests/front -v -s --tb=short ^
+            --junitxml=output/front-results.xml ^
+            --html=output/front-report.html --self-contained-html
         continue-on-error: true
-      
+
+      # ✅ 요약 스크립트: 윈도우 기본 powershell 사용
       - name: Generate test summary
         if: always()
-        id: summary  # body {{ steps.summary.outputs.summary }}에 사용
+        id: summary
         shell: powershell
         run: |
-           .\scripts\generate-test-summary.ps1 -OutputPath "output"
-      
+          .\scripts\generate-test-summary.ps1 -OutputPath "output"
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
