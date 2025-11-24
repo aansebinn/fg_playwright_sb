@@ -75,10 +75,10 @@ jobs:
       # 6) PowerShell로 요약 생성
       - name: Generate test summary
         if: always()
-        id: summary
-        shell: cmd
+        id: summary  # body {{ steps.summary.outputs.summary }}에 사용
+        shell: pwsh
         run: |
-          "${{ env.PYTHON_PATH }}\python.exe" ./scripts/generate_test_summary.py -OutputPath "output"
+          & ./scripts/generate-test-summary.ps1 -OutputPath "output"
 
       # 7) 결과 아티팩트 업로드 (XML/HTML 리포트)
       - name: Upload test results
