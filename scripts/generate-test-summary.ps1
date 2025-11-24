@@ -37,7 +37,7 @@ foreach ($xmlFile in $xmlFiles) {
             $totalTests += $total
             
             $testType = $xmlFile -replace "-results.xml"
-            $status = if ($failed -eq 0 -and $errors -eq 0) { "PASS" } else { "FAIL" }
+            $status = if ($failed -eq 0 -and $errors -eq 0) { "✅" } else { "❌" }
             
             $summary += @"
 $status $($testType.ToUpper())
