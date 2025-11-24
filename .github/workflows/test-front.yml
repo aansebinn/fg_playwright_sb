@@ -16,12 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # ✅ GitHub Actions가 알아서 Python 3.11 설치 & PATH 설정
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - name: Install dependencies
         shell: cmd
         run: |
